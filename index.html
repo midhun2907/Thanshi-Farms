@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanshi Farms - Management Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Flatpickr for enforcing dd/mm/yyyy calendar picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-area">
+                    <span class="logo-icon"><i class="fa-solid fa-wheat-awn"></i></span>
+                    <div class="logo-text">
+                        <h1>Thanshi Farms</h1>
+                        <span>Management Portal</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#wage-tracking" class="menu-item" data-tab="wage-tracking">
+                    <i class="fa-solid fa-people-carry-box"></i>
+                    <span>Daily Wages</span>
+                </a>
+                <a href="#cocoa-sales" class="menu-item" data-tab="cocoa-sales">
+                    <i class="fa-solid fa-cubes-stacked"></i>
+                    <span>Cocoa Sales</span>
+                </a>
+                <a href="#expenses" class="menu-item" data-tab="expenses">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>General Expenses</span>
+                </a>
+                <a href="#employees" class="menu-item" data-tab="employees">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Permanent Staff</span>
+                </a>
+                <a href="#settings" class="menu-item" data-tab="settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Settings & Data</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="pulse-dot online"></span>
+                    <span>Local Database Persisted</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Top Dashboard Bar -->
+            <header class="top-bar">
+                <div class="page-title-section">
+                    <h2 id="current-section-title">Dashboard Summary</h2>
+                    <p class="current-date-display" id="header-date">28/05/2026</p>
+                </div>
+                <div class="top-bar-actions">
+                    <!-- Financial Year Selector -->
+                    <div class="fy-selector-wrapper">
+                        <label for="fy-select"><i class="fa-solid fa-calendar-days"></i> Financial Year</label>
+                        <select id="fy-select" class="custom-select">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+                    <!-- SMS Simulator Quick View -->
+                    <button class="sms-sim-trigger" id="sms-panel-toggle" title="SMS Dispatch History">
+                        <i class="fa-solid fa-message"></i>
+                        <span class="sms-badge" id="sms-badge-count">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Notification Toast Area -->
+            <div id="toast-container"></div>
+
+            <!-- Tab Content Sheets -->
+            <div class="content-body">
+                
+                <!-- MODULE 4: CONSOLIDATED DASHBOARD -->
+                <section id="tab-dashboard" class="tab-pane active">
+                    <div class="dashboard-grid">
+                        <!-- Stats Row -->
+                        <div class="stats-cards-container">
+                            <div class="stat-card revenue">
+                                <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                                <div class="stat-details">
+                                    <h3>Cocoa Revenue</h3>
+                                    <p class="stat-value" id="dash-cocoa-revenue">₹0.00</p>
+                                    <span class="stat-subtext" id="dash-cocoa-count">0 Sales Recorded</span>
+                                </div>
+                            </div>
+                            <div class="stat-card expense">
+                                <div class="stat-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                                <div class="stat-details">
+                                    <h3>Daily Wage Costs</h3>
+                                    <p class="stat-value" id="dash-wage-expenses">₹0.00</p>
+                                    <span class="stat-subtext" id="dash-wage-unpaid">₹0.00 Unpaid</span>
+                                </div>
+                            </div>
+                            <div class="stat-card expense-gen">
+                                <div class="stat-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                                <div class="stat-details">
+                                    <h3>General Expenses</h3>
+                                    <p class="stat-value" id="dash-gen-expenses">₹0.00</p>
+                                    <span class="stat-subtext">Fertilizers, machinery, tools</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Graphical Overview -->
+                        <div class="dashboard-charts-row">
+                            <div class="glass-card chart-card">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-chart-simple"></i> Financial Category Breakdown</h3>
+                                    <div class="card-actions">
+                                        <span class="badge badge-primary" id="fy-label-chart">FY 2025 - 2026</span>
+                                    </div>
+                                </div>
+                                <div class="card-body chart-wrapper">
+                                    <!-- Embedded dynamic SVG bar-chart styled in CSS -->
+                                    <div class="custom-chart-container" id="dashboard-svg-chart">
+                                        <!-- Built dynamically in app.js -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="glass-card summary-table-card">
+                                <div class="card-header">
+                                    <h3><i class="fa-solid fa-list-check"></i> Recent Activity Log</h3>
+                                    <button class="btn btn-sm btn-text" onclick="app.navigateToTab('settings')">View All</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="data-table compact">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Type</th>
+                                                    <th>Description</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dash-recent-activities">
+                                                <!-- Populated via JS -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MODULE 1: DAILY WAGE WORKER TRACKING -->
+                <section id="tab-wage-tracking" class="tab-pane">
+                    <div class="section-layout-grid">
+                        <!-- Log Form -->
+                        <div class="glass-card form-card">
+                            <div class="card-header">
+                                <h3 id="wage-form-title"><i class="fa-solid fa-circle-plus"></i> Record Daily Worker Log</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="wage-form" class="farming-form">
+                                    <input type="hidden" id="wage-edit-id">
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="wage-date">Select Date <span class="required">*</span></label>
+                                            <div class="input-icon-wrapper">
+                                                <i class="fa-regular fa-calendar-days input-icon"></i>
+                                                <input type="text" id="wage-date" required class="form-input date-picker-input" placeholder="dd/mm/yyyy">
+                                            </div>
+                                            <small class="form-help">Only present or back-dated entries allowed</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row split-2">
+                                        <div class="form-group">
+                                            <label for="wage-men-count">Number of Men <span class="required">*</span></label>
+                                            <input type="number" id="wage-men-count" min="0" placeholder="0" required class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="wage-women-count">Number of Women <span class="required">*</span></label>
+                                            <input type="number" id="wage-women-count" min="0" placeholder="0" required class="form-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row split-2">
+                                        <div class="form-group">
+                                            <label for="wage-men-rate">Wage per Man (₹) <span class="required">*</span></label>
+                                            <input type="text" id="wage-men-rate" placeholder="e.g. 500" class="form-input currency-input" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="wage-women-rate">Wage per Woman (₹) <span class="required">*</span></label>
+                                            <input type="text" id="wage-women-rate" placeholder="e.g. 400" class="form-input currency-input" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="wage-category">Category <span class="required">*</span></label>
+                                            <div class="select-with-add">
+                                                <select id="wage-category" class="form-input custom-select" required>
+                                                    <!-- Dynamic options -->
+                                                </select>
+                                                <button type="button" class="btn-icon" id="btn-add-wage-cat" title="Add New Category">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="wage-purpose">Purpose / Specific Work Details</label>
+                                            <textarea id="wage-purpose" rows="2" placeholder="Describe the specific task or location of work..." class="form-input"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-12 checkbox-group">
+                                            <input type="checkbox" id="wage-status-paid" checked>
+                                            <label for="wage-status-paid">Wages paid on the same day?</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" id="btn-wage-cancel" onclick="app.cancelWageEdit()">Clear</button>
+                                        <button type="submit" class="btn btn-primary" id="btn-wage-submit">Save Entry</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Data List Table -->
+                        <div class="glass-card table-card">
+                            <div class="card-header flex-header">
+                                <div class="header-titles">
+                                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Wage Records Log</h3>
+                                    <span class="sub" id="wage-log-count">Showing 0 entries</span>
+                                </div>
+                                <div class="header-actions">
+                                    <div class="filter-controls">
+                                        <select id="wage-filter-cat" class="custom-select select-sm">
+                                            <option value="all">All Categories</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-sm btn-export" id="btn-wage-export-csv" title="Export to CSV">
+                                        <i class="fa-solid fa-file-csv"></i> CSV
+                                    </button>
+                                    <button class="btn btn-sm btn-export" id="btn-wage-export-pdf" title="Export/Print PDF">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body scrollable-body">
+                                <div class="table-responsive">
+                                    <table class="data-table" id="wage-log-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Category</th>
+                                                <th>M / F Count</th>
+                                                <th>Rates (M/F)</th>
+                                                <th>Purpose</th>
+                                                <th>Total Wage</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="wage-records-tbody">
+                                            <!-- Dynamically generated rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MODULE 2: COCOA SALES -->
+                <section id="tab-cocoa-sales" class="tab-pane">
+                    <!-- Dynamic Cocoa Sales Summary Ribbon -->
+                    <div class="cocoa-summary-ribbon">
+                        <div class="ribbon-item">
+                            <div class="ribbon-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                            <div class="ribbon-details">
+                                <span>Total Quantity Sold</span>
+                                <strong id="cocoa-ribbon-qty">0 kg</strong>
+                            </div>
+                        </div>
+                        <div class="ribbon-item">
+                            <div class="ribbon-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                            <div class="ribbon-details">
+                                <span>Total Amount Received</span>
+                                <strong id="cocoa-ribbon-amount">₹0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-layout-grid">
+                        <!-- Sales entry form -->
+                        <div class="glass-card form-card">
+                            <div class="card-header">
+                                <h3 id="cocoa-form-title"><i class="fa-solid fa-cash-register"></i> Record Cocoa Beans Sale</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="cocoa-form" class="farming-form">
+                                    <input type="hidden" id="cocoa-edit-id">
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="cocoa-date">Sale Date <span class="required">*</span></label>
+                                            <div class="input-icon-wrapper">
+                                                <i class="fa-regular fa-calendar-days input-icon"></i>
+                                                <input type="text" id="cocoa-date" required class="form-input date-picker-input" placeholder="dd/mm/yyyy">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row split-2">
+                                        <div class="form-group">
+                                            <label for="cocoa-seller">Seller Name <span class="required">*</span></label>
+                                            <div class="select-with-add">
+                                                <select id="cocoa-seller" required class="form-input custom-select">
+                                                    <option value="" disabled selected>-- Select Seller --</option>
+                                                </select>
+                                                <button type="button" class="btn-icon" id="btn-add-seller" title="Register New Seller">
+                                                    <i class="fa-solid fa-user-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cocoa-seller-phone">Seller Contact No.</label>
+                                            <input type="tel" id="cocoa-seller-phone" placeholder="e.g. 9876543210" class="form-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row split-2">
+                                        <div class="form-group">
+                                            <label for="cocoa-buyer">Buyer Name</label>
+                                            <input type="text" id="cocoa-buyer" placeholder="Buyer's name" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cocoa-buyer-phone">Buyer Contact No.</label>
+                                            <input type="tel" id="cocoa-buyer-phone" placeholder="e.g. 9988776655" class="form-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row split-2">
+                                        <div class="form-group">
+                                            <label for="cocoa-qty">Quantity (kg) <span class="required">*</span></label>
+                                            <input type="text" id="cocoa-qty" required placeholder="e.g. 50" class="form-input currency-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cocoa-rate">Amount per kg (₹) <span class="required">*</span></label>
+                                            <input type="text" id="cocoa-rate" required placeholder="e.g. 300" class="form-input currency-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="total-badge-container">
+                                        <span>Auto-Calculated Total Sales:</span>
+                                        <span id="cocoa-total-calculated" class="price-val">₹0.00</span>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label id="receipt-upload-label" for="cocoa-receipt">Attach Receipt <span class="required">*</span></label>
+                                            <div class="file-upload-wrapper">
+                                                <input type="file" id="cocoa-receipt" accept="image/*, application/pdf" class="file-upload-input">
+                                                <div class="file-upload-placeholder" id="receipt-upload-placeholder">
+                                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                                    <span>Click to upload image or PDF receipt</span>
+                                                    <small>Max file size: 2MB (Auto-compressed)</small>
+                                                </div>
+                                                <div class="file-upload-preview hidden" id="receipt-preview-box">
+                                                    <img id="receipt-thumbnail" src="" alt="Receipt Preview">
+                                                    <div class="preview-meta">
+                                                        <span id="receipt-file-name">receipt.png</span>
+                                                        <button type="button" class="btn btn-sm btn-danger" id="btn-remove-receipt"><i class="fa-solid fa-trash"></i> Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" id="btn-cocoa-cancel" onclick="app.cancelCocoaEdit()">Clear</button>
+                                        <button type="submit" class="btn btn-primary" id="btn-cocoa-submit">Record Sale</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Data table -->
+                        <div class="glass-card table-card">
+                            <div class="card-header flex-header">
+                                <div class="header-titles">
+                                    <h3><i class="fa-solid fa-money-bill-trend-up"></i> Cocoa Sales History</h3>
+                                    <span class="sub" id="cocoa-log-count">0 Sales logged</span>
+                                </div>
+                                <div class="header-actions">
+                                    <div class="filter-controls">
+                                        <select id="cocoa-filter-seller" class="custom-select select-sm">
+                                            <option value="all">All Sellers</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-sm btn-export" id="btn-cocoa-export-csv"><i class="fa-solid fa-file-csv"></i> CSV</button>
+                                    <button class="btn btn-sm btn-export" id="btn-cocoa-export-pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                                </div>
+                            </div>
+                            <div class="card-body scrollable-body">
+                                <div class="table-responsive">
+                                    <table class="data-table" id="cocoa-log-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Seller Name</th>
+                                                <th>Buyer Name</th>
+                                                <th>Qty (kg)</th>
+                                                <th>Rate/kg</th>
+                                                <th>Total Amount</th>
+                                                <th>Receipt</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="cocoa-records-tbody">
+                                            <!-- Dynamically generated -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MODULE 3: GENERAL EXPENSES -->
+                <section id="tab-expenses" class="tab-pane">
+                    <div class="section-layout-grid">
+                        <!-- Log form -->
+                        <div class="glass-card form-card">
+                            <div class="card-header">
+                                <h3 id="expense-form-title"><i class="fa-solid fa-cart-shopping"></i> Log Farm Expense</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="expense-form" class="farming-form">
+                                    <input type="hidden" id="expense-edit-id">
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="expense-date">Expense Date <span class="required">*</span></label>
+                                            <div class="input-icon-wrapper">
+                                                <i class="fa-regular fa-calendar-days input-icon"></i>
+                                                <input type="text" id="expense-date" required class="form-input date-picker-input" placeholder="dd/mm/yyyy">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="expense-category">Category <span class="required">*</span></label>
+                                            <div class="select-with-add">
+                                                <select id="expense-category" class="form-input custom-select" required>
+                                                    <option value="fertilizer">Fertilizers & Chemicals</option>
+                                                    <option value="machinery">Machinery purchase/rent</option>
+                                                    <option value="tools">Tools & Hardware</option>
+                                                    <option value="seeds">Seeds & Saplings</option>
+                                                    <option value="irrigation">Irrigation / Water management</option>
+                                                    <option value="fuel">Fuel & Power</option>
+                                                    <option value="other">Other Miscellaneous</option>
+                                                </select>
+                                                <button type="button" class="btn-icon" id="btn-add-expense-cat" title="Add Custom Category">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="expense-amount">Amount (₹) <span class="required">*</span></label>
+                                            <input type="text" id="expense-amount" required placeholder="e.g. 2,500" class="form-input currency-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group col-12">
+                                            <label for="expense-desc">Description / Particulars <span class="required">*</span></label>
+                                            <textarea id="expense-desc" rows="3" required placeholder="e.g. Purchased 5 bags of NPK fertilizer from shop X..." class="form-input"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" id="btn-expense-cancel" onclick="app.cancelExpenseEdit()">Clear</button>
+                                        <button type="submit" class="btn btn-primary" id="btn-expense-submit">Save Expense</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Data table -->
+                        <div class="glass-card table-card">
+                            <div class="card-header flex-header">
+                                <div class="header-titles">
+                                    <h3><i class="fa-solid fa-file-invoice-dollar"></i> Expense Log Records</h3>
+                                    <span class="sub" id="expense-log-count">0 Expenses logged</span>
+                                </div>
+                                <div class="header-actions">
+                                    <div class="filter-controls">
+                                        <select id="expense-filter-cat" class="custom-select select-sm">
+                                            <option value="all">All Categories</option>
+                                            <option value="fertilizer">Fertilizers & Chemicals</option>
+                                            <option value="machinery">Machinery</option>
+                                            <option value="tools">Tools</option>
+                                            <option value="seeds">Seeds</option>
+                                            <option value="irrigation">Irrigation</option>
+                                            <option value="fuel">Fuel & Power</option>
+                                            <option value="other">Other Miscellaneous</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-sm btn-export" id="btn-expense-export-csv"><i class="fa-solid fa-file-csv"></i> CSV</button>
+                                    <button class="btn btn-sm btn-export" id="btn-expense-export-pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                                </div>
+                            </div>
+                            <div class="card-body scrollable-body">
+                                <div class="table-responsive">
+                                    <table class="data-table" id="expense-log-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Category</th>
+                                                <th>Description</th>
+                                                <th>Amount</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="expense-records-tbody">
+                                            <!-- Dynamically generated -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MODULE 5: PERMANENT EMPLOYEES (EXCLUDED FROM FINANCIAL YEARS) -->
+                <section id="tab-employees" class="tab-pane">
+                    <div class="employee-layout-manager">
+                        <!-- Employee Directory list -->
+                        <div class="glass-card directory-card">
+                            <div class="card-header flex-header">
+                                <h3><i class="fa-solid fa-folder-open"></i> Permanent Staff Directory</h3>
+                                <button class="btn btn-sm btn-primary" id="btn-new-employee"><i class="fa-solid fa-user-plus"></i> Add Employee</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="employee-directory-list" id="employee-list-container">
+                                    <!-- Dynamic list of employees loaded here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Employee Details panel (Attendance and Salary advances) -->
+                        <div class="glass-card details-card" id="employee-details-panel">
+                            <!-- Show placeholder by default, and actual details when selected -->
+                            <div class="no-selection-placeholder" id="emp-no-selection">
+                                <i class="fa-solid fa-user-check"></i>
+                                <h4>No Employee Selected</h4>
+                                <p>Select an employee from the directory list on the left to manage attendance, record salary withdrawals/advances, or edit details.</p>
+                            </div>
+                            
+                            <div class="employee-detailed-workspace hidden" id="emp-workspace">
+                                <div class="employee-profile-header">
+                                    <div class="avatar-box"><i class="fa-solid fa-user-tie"></i></div>
+                                    <div class="profile-info">
+                                        <h3 id="emp-profile-name">Ramesh Kumar</h3>
+                                        <p><i class="fa-solid fa-phone"></i> <span id="emp-profile-phone">9876543210</span></p>
+                                        <p><i class="fa-solid fa-calendar-check"></i> Started: <span id="emp-profile-start">June 10, 2024</span></p>
+                                    </div>
+                                    <div class="profile-financials">
+                                        <div class="fin-block">
+                                            <span class="label">Yearly Salary</span>
+                                            <span class="val" id="emp-profile-salary">₹3,00,000</span>
+                                        </div>
+                                        <div class="fin-block">
+                                            <span class="label">Total Advances Drawn</span>
+                                            <span class="val warning-text" id="emp-profile-advances">₹60,000</span>
+                                        </div>
+                                        <div class="fin-block">
+                                            <span class="label">Remaining Balance</span>
+                                            <span class="val success-text" id="emp-profile-balance">₹2,40,000</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tabs-sub-container">
+                                    <div class="sub-tab-triggers">
+                                        <button class="sub-tab active" data-subtab="emp-absences"><i class="fa-solid fa-calendar-minus"></i> Absence Log (Only)</button>
+                                        <button class="sub-tab" data-subtab="emp-salary-draws"><i class="fa-solid fa-money-bill-transfer"></i> Salary Advances</button>
+                                    </div>
+
+                                    <div class="sub-tab-contents">
+                                        <!-- Absence Log tab -->
+                                        <div class="sub-tab-panel active" id="subtab-emp-absences">
+                                            <div class="split-subpanel">
+                                                <div class="subpanel-form">
+                                                    <h4>Record Absence</h4>
+                                                    <form id="absence-form" class="farming-form compact-form">
+                                                        <div class="form-group">
+                                                            <label for="abs-date">Date Absent <span class="required">*</span></label>
+                                                            <div class="input-icon-wrapper">
+                                                                <i class="fa-regular fa-calendar-days input-icon"></i>
+                                                                <input type="text" id="abs-date" required class="form-input date-picker-input" placeholder="dd/mm/yyyy">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="abs-reason">Reason for Absence</label>
+                                                            <input type="text" id="abs-reason" placeholder="e.g. Fever, Personal work" class="form-input">
+                                                        </div>
+                                                        <div class="form-group checkbox-group">
+                                                            <input type="checkbox" id="abs-send-sms" checked>
+                                                            <label for="abs-send-sms">Send Absence SMS notification?</label>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-circle-check"></i> Record Absence</button>
+                                                    </form>
+                                                </div>
+                                                <div class="subpanel-list">
+                                                    <h4>Absence Log History</h4>
+                                                    <div class="sub-list-scroll">
+                                                        <table class="data-table compact" id="table-emp-absences">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Date</th>
+                                                                    <th>Reason</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="emp-absences-tbody">
+                                                                <!-- Dynamic -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Salary draws / Advances tab -->
+                                        <div class="sub-tab-panel" id="subtab-emp-salary-draws">
+                                            <div class="split-subpanel">
+                                                <div class="subpanel-form">
+                                                    <h4>Draw Advance / Salary</h4>
+                                                    <form id="advance-form" class="farming-form compact-form">
+                                                        <div class="form-group">
+                                                            <label for="adv-date">Draw Date <span class="required">*</span></label>
+                                                            <div class="input-icon-wrapper">
+                                                                <i class="fa-regular fa-calendar-days input-icon"></i>
+                                                                <input type="text" id="adv-date" required class="form-input date-picker-input" placeholder="dd/mm/yyyy">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="adv-amount">Amount Drawn (₹) <span class="required">*</span></label>
+                                                            <input type="text" id="adv-amount" required placeholder="e.g. 10,000" class="form-input currency-input">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="adv-purpose">Purpose of Draw</label>
+                                                            <input type="text" id="adv-purpose" placeholder="e.g. Festival advance, Medical" class="form-input">
+                                                        </div>
+                                                        <div class="form-group checkbox-group">
+                                                            <input type="checkbox" id="adv-send-sms" checked>
+                                                            <label for="adv-send-sms">Send Advance Drawn SMS?</label>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-receipt"></i> Record Advance</button>
+                                                    </form>
+                                                </div>
+                                                <div class="subpanel-list">
+                                                    <h4>Advance/Draw History</h4>
+                                                    <div class="sub-list-scroll">
+                                                        <table class="data-table compact" id="table-emp-advances">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Date</th>
+                                                                    <th>Amount</th>
+                                                                    <th>Purpose</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="emp-advances-tbody">
+                                                                <!-- Dynamic -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MODULE: SETTINGS & DATA BACKUP -->
+                <section id="tab-settings" class="tab-pane">
+                    <div class="dashboard-grid">
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-circle-down"></i> Local Database Backup & Restore</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="sec-desc">All your data is kept directly in your browser's local secure storage (`localStorage`). To make sure your records are safe, you can export the database to a file or restore a backup from a saved file.</p>
+                                <div class="backup-actions">
+                                    <button class="btn btn-primary" id="btn-export-db">
+                                        <i class="fa-solid fa-file-export"></i> Download Backup (JSON)
+                                    </button>
+                                    <div class="restore-wrapper">
+                                        <label for="import-db-file" class="btn btn-secondary">
+                                            <i class="fa-solid fa-file-import"></i> Restore Backup File
+                                        </label>
+                                        <input type="file" id="import-db-file" accept=".json" class="hidden-file-input">
+                                    </div>
+                                </div>
+                                <div class="danger-zone-box">
+                                    <h4>Danger Zone</h4>
+                                    <p>Clearing data will remove all transactions, records, and employees permanently from this device.</p>
+                                    <button class="btn btn-danger btn-sm" id="btn-clear-db">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Reset Entire Database
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-gears"></i> Application Preferences</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="farming-form">
+                                    <div class="form-group col-12">
+                                        <h4>SMS Notification Settings</h4>
+                                        <p class="sec-desc">Enable dynamic Twilio SMS dispatching or keep the Interactive SMS Console simulator active.</p>
+                                        <div class="radio-choices">
+                                            <div class="radio-item">
+                                                <input type="radio" name="sms-mode" id="sms-mode-sim" value="simulator" checked>
+                                                <label for="sms-mode-sim">Interactive SMS Simulator (Recommended - Free)</label>
+                                            </div>
+                                            <div class="radio-item">
+                                                <input type="radio" name="sms-mode" id="sms-mode-api" value="api">
+                                                <label for="sms-mode-api">Twilio API Gateway Integration</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="twilio-config-area" class="hidden form-subpanel">
+                                        <div class="form-group">
+                                            <label for="tw-sid">Twilio Account SID</label>
+                                            <input type="text" id="tw-sid" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxx" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tw-token">Twilio Auth Token</label>
+                                            <input type="password" id="tw-token" placeholder="Your Twilio token" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tw-sender">Twilio Sender Number (SMS)</label>
+                                            <input type="text" id="tw-sender" placeholder="+1234567890" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL 1: ADD / EDIT PERMANENT EMPLOYEE -->
+    <div class="modal-overlay hidden" id="modal-employee">
+        <div class="modal-card glass-modal">
+            <div class="modal-header">
+                <h3 id="modal-emp-title">Add New Permanent Employee</h3>
+                <button class="btn-close-modal" id="btn-close-emp-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-modal-employee" class="farming-form">
+                    <input type="hidden" id="modal-emp-id">
+                    <div class="form-group col-12">
+                        <label for="emp-name">Employee Full Name <span class="required">*</span></label>
+                        <input type="text" id="emp-name" required placeholder="e.g. Ramesh Kumar" class="form-input">
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="emp-phone">Mobile Number <span class="required">*</span></label>
+                        <input type="tel" id="emp-phone" required placeholder="e.g. 9876543210" class="form-input">
+                        <small class="form-help">Used for sending absence and salary advance SMS notifications</small>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="emp-start-date">Start Date / Joining Date <span class="required">*</span></label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-regular fa-calendar-days input-icon"></i>
+                            <input type="text" id="emp-start-date" required class="form-input date-picker-input" placeholder="dd/mm/yyyy">
+                        </div>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="emp-salary">Yearly Salary (₹) <span class="required">*</span></label>
+                        <input type="text" id="emp-salary" required placeholder="e.g. 3,00,000" class="form-input currency-input">
+                        <small class="form-help">Enter the total salary negotiated for one full year.</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-emp-modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btn-save-emp-modal">Add Employee</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD CUSTOM CATEGORY MODAL -->
+    <div class="modal-overlay hidden" id="modal-custom-cat">
+        <div class="modal-card glass-modal width-sm">
+            <div class="modal-header">
+                <h3>Add Custom Category</h3>
+                <button class="btn-close-modal" id="btn-close-cat-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-modal-custom-cat" class="farming-form">
+                    <input type="hidden" id="modal-cat-type" value="wage"> <!-- wage or expense -->
+                    <div class="form-group col-12">
+                        <label for="custom-cat-name">Category Name <span class="required">*</span></label>
+                        <input type="text" id="custom-cat-name" required placeholder="e.g. Weeding, Fertilizing" class="form-input">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-cat-modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Category</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADD NEW SELLER MODAL -->
+    <div class="modal-overlay hidden" id="modal-custom-seller">
+        <div class="modal-card glass-modal width-sm">
+            <div class="modal-header">
+                <h3>Register New Seller</h3>
+                <button class="btn-close-modal" id="btn-close-seller-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-modal-custom-seller" class="farming-form">
+                    <div class="form-group col-12">
+                        <label for="custom-seller-name">Seller Name <span class="required">*</span></label>
+                        <input type="text" id="custom-seller-name" required placeholder="e.g. Srinivas Rao" class="form-input">
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="custom-seller-phone">Mobile Number</label>
+                        <input type="tel" id="custom-seller-phone" placeholder="e.g. 9848012345" class="form-input">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-seller-modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: INTERACTIVE SMS SIMULATOR CONSOLE -->
+    <div class="modal-overlay hidden" id="modal-sms-panel">
+        <div class="modal-card glass-modal sms-modal">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-mobile-screen"></i> SMS Notification Dispatcher</h3>
+                <button class="btn-close-modal" id="btn-close-sms-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body split-sms-body">
+                <!-- Mockup Smartphone Screen -->
+                <div class="phone-mockup">
+                    <div class="phone-speaker"></div>
+                    <div class="phone-screen">
+                        <div class="phone-header">
+                            <span class="time">09:41</span>
+                            <div class="status-icons">
+                                <i class="fa-solid fa-signal"></i>
+                                <i class="fa-solid fa-wifi"></i>
+                                <i class="fa-solid fa-battery-three-quarters"></i>
+                            </div>
+                        </div>
+                        <div class="phone-chat-body">
+                            <div class="chat-contact-info">
+                                <span class="avatar"><i class="fa-solid fa-user"></i></span>
+                                <span class="name" id="sms-phone-contact-name">Employee</span>
+                            </div>
+                            <div class="chat-bubble-container" id="sms-phone-bubbles">
+                                <div class="sms-system-time">Today</div>
+                                <div class="sms-bubble received">
+                                    No notifications simulated yet. Try adding an absence or advance.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="phone-input-bar">
+                            <span>Text Message</span>
+                            <i class="fa-regular fa-face-smile"></i>
+                        </div>
+                    </div>
+                    <div class="phone-home-btn"></div>
+                </div>
+
+                <!-- SMS Log list on the right -->
+                <div class="sms-history-panel">
+                    <h4>SMS Outbox Logs</h4>
+                    <p class="sec-desc">History of all messages generated by the app. Click on any log to view it in the smartphone preview.</p>
+                    <div class="sms-log-scroll" id="sms-log-list">
+                        <!-- Dynamic list -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: RECEIPT VIEWER -->
+    <div class="modal-overlay hidden" id="modal-receipt-viewer">
+        <div class="modal-card glass-modal width-md">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-receipt"></i> Receipt Image Viewer</h3>
+                <button class="btn-close-modal" id="btn-close-receipt-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body receipt-viewer-body">
+                <div class="receipt-display" id="receipt-full-display">
+                    <!-- Loaded dynamically -->
+                </div>
+                <div class="receipt-actions">
+                    <a href="" download="receipt.png" id="btn-download-receipt" class="btn btn-primary"><i class="fa-solid fa-download"></i> Download Image</a>
+                    <button type="button" class="btn btn-secondary" id="btn-close-receipt-viewer">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flatpickr JS (placed before app.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="app.js"></script>
+</body>
+</html>
